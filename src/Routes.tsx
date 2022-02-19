@@ -4,57 +4,56 @@ import {
   StackNavigationProp,
   //StackScreenProps
 } from "@react-navigation/stack";
-import React from "react";
-import { Button, StyleSheet, Text } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  AsyncStorage,
+  Button,
+  StyleSheet,
+  Text,
+} from "react-native";
+import { AppTabs } from "./AppTabs";
 import { AuthNavProps, AuthParamList } from "./AuthParamList";
+import { AuthContext } from "./AuthProvider";
+import { AuthStack } from "./AuthStack";
 import Center from "./Center";
 
 interface RoutesProps {}
 
-const Stack = createStackNavigator<AuthParamList>();
-
-function Login({ navigation, route }: AuthNavProps<"Login">) {
-  return (
-    <Center>
-      <Text>Login</Text>
-      <Button
-        title="Go to Reg"
-        onPress={() => {
-          navigation.navigate("Register");
-        }}
-      />
-    </Center>
-  );
-}
-
-function Register({ navigation }: AuthNavProps<"Register">) {
-  return (
-    <Center>
-      <Text>Register</Text>
-      <Button
-        title="Go to Login"
-        onPress={() => {
-          navigation.navigate("Login");
-        }}
-      />
-    </Center>
-  );
-}
-
 export const Routes: React.FC<RoutesProps> = () => {
+  const { user, login } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // check if the user is logged in or not
+    // AsyncStorage.getItem("user")
+    //   .then((userString) => {
+    //     console.log(userString);
+    //     if (userString) {
+    //       // decode it
+    //       console.log(userString);
+    //       login();
+    //     }
+    //     setLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  if (loading) {
+    return (
+      <Center>
+        <ActivityIndicator size="large" />
+      </Center>
+    );
+  }
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Register"
-        screenOptions={
-          {
-            // header: () => null,
-          }
-        }
-      >
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-      </Stack.Navigator>
+      {user ? <AppTabs /> : <AuthStack />}
     </NavigationContainer>
   );
 };
